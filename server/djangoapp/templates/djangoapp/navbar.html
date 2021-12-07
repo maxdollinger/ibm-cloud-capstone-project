@@ -1,0 +1,33 @@
+<nav class="navbar navbar-light bg-light mb-4">
+    <div class="container-fluid">
+        <a href="{% url 'djangoapp:index' %}">
+        <span class="navbar-brand mb-0 h1">Best Dealership</span>
+        </a>
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'djangoapp:about' %}">About</a>
+            </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            {% if user.is_authenticated %}
+            <li>
+                <a class="btn btn-link" href="#">{{ user.first_name }}({{ user.username }})</a>
+                <a class="btn btn-link" href="{% url 'djangoapp:logout' %}">Logout</a>
+            </li>
+            {% else %}
+            <li>
+                <form class="form-inline" action="{% url 'djangoapp:login' %}" method="post">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" class="form-control {% if message %} is-invalid {% endif%}" placeholder="Username" name="username" >
+                        <input type="password" class="form-control {% if message %} is-invalid {% endif%}" placeholder="Password" name="psw" >
+                        <button class="btn btn-primary" type="submit">Login</button>
+                        <a class="btn btn-link" href="{% url 'djangoapp:registration' %}">Sign Up</a>
+                    </div>
+                </form>
+                {% if message %} <p class="text-danger">{{ message }}</p>{% endif%}
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
