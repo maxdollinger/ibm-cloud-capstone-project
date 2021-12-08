@@ -20,13 +20,13 @@ def get_request(url, **kwargs):
         # Call get method of requests library with URL and parameters
         response = requests.get(url, headers={'Content-Type': 'application/json'},
                                     params=kwargs)
+        status_code = response.status_code
+        print("With status {} ".format(status_code))
+        json_data = json.loads(response.text)
+        return json_data
     except:
-        # If any error occurs
         print("Network exception occurred")
-    status_code = response.status_code
-    print("With status {} ".format(status_code))
-    json_data = json.loads(response.text)
-    return json_data
+    
 
 # Create a `post_request` to make HTTP POST requests
 def post_request(url, json_payload, **kwargs):
@@ -34,12 +34,13 @@ def post_request(url, json_payload, **kwargs):
     print("POST from {} ".format(url))
     try:
         response = requests.post(url, params=kwargs, json=json_payload)
+        status_code = response.status_code
+        print("With status {} ".format(status_code))
+        json_data = json.loads(response.text)
+        return json_data
     except:
         print("Network exception occured")
-    status_code = response.status_code
-    print("With status {} ".format(status_code))
-    json_data = json.loads(response.text)
-    return json_data
+    
 
 
 # Create a get_dealers_from_cf method to get dealers from a cloud function
@@ -116,7 +117,10 @@ def analyze_review_sentiments(dealerreview):
     authenticator = IAMAuthenticator(api_key) 
     natural_language_understanding = NaturalLanguageUnderstandingV1(version='2021-12-01',authenticator=authenticator) 
     natural_language_understanding.set_service_url(url) 
-    response = natural_language_understanding.analyze( text=dealerreview,features=Features(sentiment=SentimentOptions(targets=[dealerreview]))).get_result() 
+    try:
+        response = natural_language_understanding.analyze( text=dealerreview,features=Features(sentiment=SentimentOptions(targets=[dealerreview]))).get_result()
+    except:
+        response = {'sentiment': {'document': {'label': 'neutral'}}}
 
     label=json.dumps(response, indent=2) 
     label = response['sentiment']['document']['label'] 

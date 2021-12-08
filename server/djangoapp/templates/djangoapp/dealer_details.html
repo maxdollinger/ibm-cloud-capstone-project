@@ -1,18 +1,43 @@
 {% extends "djangoapp/index.html" %}
 {% block content %}
-    <h3>{{ dealership.full_name }}</h3>
-    <div class="card-deck">
+<div class="card m-4">
+  <div class="card-header">
+    <div class="d-inline float-left">
+      <h3>{{dealership.full_name}}</h3>
+    </div>
+    {% if user.is_authenticated %}
+    <div class="d-inline float-right"><button class="btn btn-primary"
+        onclick="window.location.href = `{% url 'djangoapp:dealer_add_review' dealership.id %}`">Add review</button>
+    </div>
+    {% endif %}
+  </div>
+  <ul class="list-group list-group-flush">
     {% for review in reviews %}
-    <div class="card">
-        <div class="card-header">
-          {{review.name}}
+    <li class="list-group-item">
+      <div class="row">
+        <div class="col-1 d-flex">
+          <span
+            class="material-icons m-auto {% if review.sentiment == 'positive' %} text-success {% elif review.sentiment == 'negative' %} text-danger {% else %} text-warning {% endif %} ">
+            circle
+          </span>
         </div>
-        <div class="card-body">
-          <h5 class="card-title">{{ review.car_model }}</h5>
-          <p class="card-text">{{ review.review }}</p>
-          <p class="card-text">{{ review.sentiment }}</p>
+        <div class="col ">
+          <h5 class="card-title">
+            {{ review.car_make }} - {{ review.car_model }} - {{ review.car_year }}
+          </h5>
+          <div class="row">
+            <div class="col-3">Review date: {{ review.time }} </div>
+            <div class="col-3">Car purchased: {{ review.purchase }}
+              {% if review.purchase == True %}
+              - {{review.purchase_date}}
+              {% endif %} </div>
+          </div>
+          <hr>
+          <p class="card-text m-4">{{ review.review }}</p>
         </div>
       </div>
+    </li>
     {% endfor %}
-    </div>
+  </ul>
+</div>
 {% endblock %}
